@@ -1,10 +1,10 @@
-<!-- SEO: use Kimi in Cursor, Moonshot Kimi K2.6, Cursor IDE custom model, OpenAI base URL override, Kimi coding assistant, Cursor Agent with Kimi -->
+<!-- SEO:Kimi Cursor, Cursor Kimi, Kimi 2.5, jailbreak Kimi Cursor, use Kimi in Cursor, Moonshot Kimi K2.6, Cursor IDE custom model, OpenAI base URL override, Kimi coding assistant, Cursor Agent with Kimi -->
 
 <div align="center">
 
 # use-kimi-on-cursor
 
-**Use [Moonshot Kimi](https://platform.moonshot.ai) (K2.6) inside [Cursor](https://cursor.com) — without fighting proxies, tunnels, or broken tool calls.**
+**Use [Moonshot Kimi](https://platform.moonshot.ai) (K2.6) inside [Cursor](https://cursor.com), without fighting proxies, tunnels, or broken tool calls.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)](https://github.com/Lolner95/use-kimi-on-cursor)
@@ -27,7 +27,7 @@ In practice you hit walls fast:
 |---|---|
 | Point Cursor at `api.moonshot.ai` directly | Cursor expects OpenAI-shaped APIs and sends payloads Kimi rejects |
 | Use a local proxy on `127.0.0.1` | Cursor blocks private network URLs: *"Access to private networks is forbidden"* |
-| Wire up LiteLLM + cloudflared yourself | Works until it doesn't — tool names break, streaming mismatches, thinking mode loops, empty message probes |
+| Wire up LiteLLM + cloudflared yourself | Works until it doesn't, tool names break, streaming mismatches, thinking mode loops, empty message probes |
 | Flip random settings in Cursor | HTTP 400s, Agent mode dies mid-task, MCP tools fail silently |
 
 You didn't sign up to become a protocol plumber. You wanted to write code.
@@ -58,7 +58,7 @@ You  →  Cursor IDE  →  https://….trycloudflare.com/v1
 ### 1. Get a Moonshot API key
 
 Create one at **[platform.moonshot.ai](https://platform.moonshot.ai)**.  
-This is your real Kimi key — it stays on your machine, encrypted.
+This is your real Kimi key, it stays on your machine, encrypted.
 
 ### 2. Install the app
 
@@ -80,7 +80,7 @@ See [Build from source](#build-from-source) below.
 2. Paste your **Moonshot API key**
 3. Click **Start Gateway**
 4. Wait until the app shows a **public Base URL** (ends with `/v1`)
-5. Copy the **Gateway API key** shown in the app — this is *not* your Moonshot key
+5. Copy the **Gateway API key** shown in the app, this is *not* your Moonshot key
 
 > **Tip:** Leave **"Start with Windows"** on. The app runs in the tray, restarts the tunnel if needed, and pings you when the URL changes.
 
@@ -158,7 +158,7 @@ This is the stuff that took hours to debug manually. The app just handles it.
 
 Cursor refuses to call `http://127.0.0.1:…` for security reasons. Cloudflare Quick Tunnel gives you a temporary `https://….trycloudflare.com` URL that points at your local gateway.
 
-**Trade-off:** The tunnel URL can change when you restart the app. The UI tells you when that happens — copy the new Base URL into Cursor.
+**Trade-off:** The tunnel URL can change when you restart the app. The UI tells you when that happens, copy the new Base URL into Cursor.
 
 ---
 
@@ -173,7 +173,7 @@ Cursor refuses to call `http://127.0.0.1:…` for security reasons. Cloudflare Q
 | **Gateway key rotation** | Lock down the tunnel if the URL leaks |
 | **DPAPI-encrypted Moonshot key** | Your real key never hits logs or Cursor |
 | **Agent + MCP compatible** | Tool calls sanitized for Kimi K2.6 |
-| **Portable mode** | Settings live next to the `.exe` — good for USB |
+| **Portable mode** | Settings live next to the `.exe`, good for USB |
 
 ---
 
@@ -182,7 +182,7 @@ Cursor refuses to call `http://127.0.0.1:…` for security reasons. Cloudflare Q
 <details>
 <summary><strong>Does this work with Cursor Agent mode?</strong></summary>
 
-Yes. v1.1+ specifically hardens Agent + MCP tool payloads — the common HTTP 400 failures from invalid tool names, empty message probes, and streaming mismatches are handled in the gateway.
+Yes. v1.1+ specifically hardens Agent + MCP tool payloads, the common HTTP 400 failures from invalid tool names, empty message probes, and streaming mismatches are handled in the gateway.
 
 </details>
 
@@ -200,7 +200,7 @@ The gateway solves all three.
 </details>
 
 <details>
-<summary><strong>My tunnel URL changed — now Cursor returns errors</strong></summary>
+<summary><strong>My tunnel URL changed, now Cursor returns errors</strong></summary>
 
 Quick Tunnel URLs are ephemeral. When the app restarts the tunnel, you get a new `trycloudflare.com` hostname.
 
@@ -213,7 +213,7 @@ Quick Tunnel URLs are ephemeral. When the app restarts the tunnel, you get a new
 
 Your Moonshot key is encrypted with **Windows DPAPI** and never sent to Cursor. Cursor only sees a locally generated **gateway key**.
 
-The tunnel is public while active — anyone with the URL *could* try to hit your gateway. Mitigations: gateway Bearer auth, key rotation, stop the gateway when not in use.
+The tunnel is public while active, anyone with the URL *could* try to hit your gateway. Mitigations: gateway Bearer auth, key rotation, stop the gateway when not in use.
 
 Details: [SECURITY.md](SECURITY.md)
 
@@ -312,8 +312,8 @@ Portable mode uses `KimiCursorGatewayData/` next to the executable.
 
 | Approach | Setup time | Agent/MCP stable? | Maintenance |
 |---|---|---|---|
-| **This project** | ~5 min | Yes (purpose-built) | Low — app handles tunnel + fixes |
-| Manual LiteLLM + cloudflared | 1–3 hours | Fragile | High — you own every breakage |
+| **This project** | ~5 min | Yes (purpose-built) | Low, app handles tunnel + fixes |
+| Manual LiteLLM + cloudflared | 1–3 hours | Fragile | High, you own every breakage |
 | Direct Moonshot in Cursor | N/A | No | Blocked by Cursor URL policy |
 | Other OpenAI proxies | Varies | Hit-or-miss | You debug protocol mismatches |
 
@@ -322,9 +322,9 @@ Portable mode uses `KimiCursorGatewayData/` next to the executable.
 ## Contributing
 
 Found a bug? Open an [issue](https://github.com/Lolner95/use-kimi-on-cursor/issues).  
-Have a fix? PRs welcome — keep changes focused, test on real Cursor + Kimi if you touch the gateway.
+Have a fix? PRs welcome, keep changes focused, test on real Cursor + Kimi if you touch the gateway.
 
-Security issues: see [SECURITY.md](SECURITY.md) — please report privately first.
+Security issues: see [SECURITY.md](SECURITY.md), please report privately first.
 
 ---
 
@@ -338,6 +338,6 @@ Security issues: see [SECURITY.md](SECURITY.md) — please report privately firs
 
 **Kimi in Cursor shouldn't require a PhD in reverse proxies.**
 
-If this saved you an afternoon of yak-shaving, star the repo — it helps others find it.
+If this saved you an afternoon of yak-shaving, star the repo, it helps others find it.
 
 </div>
