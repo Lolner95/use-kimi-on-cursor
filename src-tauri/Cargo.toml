@@ -1,0 +1,52 @@
+[package]
+name = "kimi-cursor-gateway"
+version = "1.0.0"
+description = "Kimi Cursor Gateway - OpenAI-compatible proxy for Moonshot/Kimi in Cursor"
+authors = ["Kimi Cursor Gateway"]
+edition = "2021"
+
+[lib]
+name = "kimi_cursor_gateway_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-shell = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-notification = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.8", features = ["macros", "multipart"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "limit"] }
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "stream", "multipart"], default-features = false }
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+dirs = "6"
+rand = "0.8"
+thiserror = "2"
+regex = "1"
+zip = "2"
+base64 = "0.22"
+parking_lot = "0.12"
+async-trait = "0.1"
+futures = "0.3"
+arboard = "3"
+rusqlite = { version = "0.32", features = ["bundled"] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+  "Win32_Security_Cryptography",
+  "Win32_Foundation",
+] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "stream"], default-features = false }
+serde_json = "1"

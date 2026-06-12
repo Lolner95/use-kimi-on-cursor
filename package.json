@@ -1,0 +1,41 @@
+{
+  "name": "use-kimi-on-cursor",
+  "description": "Open-source bridge to use Moonshot Kimi K2.6 inside Cursor IDE on Windows",
+  "version": "1.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lolner95/use-kimi-on-cursor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lolner95/use-kimi-on-cursor/issues"
+  },
+  "homepage": "https://github.com/Lolner95/use-kimi-on-cursor#readme",
+  "license": "MIT",
+  "author": "Lolner95",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "start": "npm run tauri:build && powershell -Command \"Start-Process 'src-tauri/target/release/kimi-cursor-gateway.exe'\"",
+    "build:portable": "powershell -ExecutionPolicy Bypass -File scripts/build-portable.ps1",
+    "test:live": "cargo test --test live_e2e --test live_tunnel -- --ignored --nocapture --test-threads=1"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-autostart": "^2",
+    "@tauri-apps/plugin-notification": "^2",
+    "@tauri-apps/plugin-shell": "^2"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  }
+}

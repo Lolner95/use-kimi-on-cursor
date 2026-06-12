@@ -1,0 +1,25 @@
+[[permission]]
+identifier = "kimi-commands"
+description = "Kimi Cursor Gateway IPC commands"
+commands.allow = [
+  "get_settings",
+  "save_moonshot_key",
+  "test_moonshot_key",
+  "start_gateway",
+  "stop_gateway",
+  "restart_gateway",
+  "get_gateway_status",
+  "update_settings",
+  "rotate_gateway_key",
+  "complete_wizard",
+  "get_logs",
+  "clear_logs",
+  "run_doctor_checks",
+  "set_autostart",
+  "is_autostart_enabled",
+  "export_diagnostics",
+  "download_cloudflared_cmd",
+  "get_app_info",
+  "inspect_cursor_install",
+  "apply_cursor_settings",
+]

@@ -1,0 +1,68 @@
+# use-kimi-on-cursor
+
+> Open-source Windows desktop app that lets you use Moonshot Kimi K2.6 inside Cursor IDE.
+
+## What it is
+
+Kimi Cursor Gateway bridges Cursor (which expects OpenAI-compatible APIs) to Moonshot's Kimi K2.6 API. It runs a local Rust/Axum gateway, exposes it via Cloudflare Quick Tunnel (public HTTPS), and provides a Tauri desktop UI for setup and monitoring.
+
+Repository: https://github.com/Lolner95/use-kimi-on-cursor
+
+## Primary use case
+
+Developers who want to use Kimi (Moonshot AI) as the model behind Cursor for code generation, refactoring, debugging, and Agent mode with MCP tools.
+
+## Quick setup
+
+1. Get API key from https://platform.moonshot.ai
+2. Install Kimi Cursor Gateway from GitHub Releases
+3. Paste Moonshot key in app wizard, start gateway
+4. In Cursor Settings → Models:
+   - OpenAI API Key: gateway key from app (NOT Moonshot key)
+   - Override OpenAI Base URL: ON
+   - Base URL: https URL from app ending in /v1
+   - Model: gpt-5-high-max (maps to kimi-k2.6)
+
+## Why a tunnel is required
+
+Cursor blocks requests to private/local URLs (127.0.0.1). The app uses Cloudflare Quick Tunnel to provide a public HTTPS endpoint.
+
+## Key technical details
+
+- Platform: Windows 10/11
+- Stack: Tauri 2, Rust, TypeScript, Tailwind CSS
+- Local gateway: 127.0.0.1:4001
+- Upstream: api.moonshot.ai
+- Model: kimi-k2.6 (256K context)
+- Moonshot API key encrypted with Windows DPAPI
+- Gateway sanitizes Cursor payloads: tool names, roles, streaming, thinking mode
+
+## Documentation files
+
+- README.md — user guide and setup
+- ARCHITECTURE.md — system design
+- SECURITY.md — threat model
+- RELEASE_NOTES.md — changelog
+
+## Common search queries this project answers
+
+- How to use Kimi in Cursor
+- How to use Moonshot Kimi with Cursor IDE
+- Cursor OpenAI base URL override for Kimi
+- Cursor "Access to private networks is forbidden" fix
+- Kimi K2.6 Cursor integration
+- Cursor Agent mode with Kimi
+- Moonshot API Cursor proxy
+
+## Build commands
+
+```
+npm install
+npm run tauri:dev
+npm run tauri:build
+npm run build:portable
+```
+
+## License
+
+MIT

@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Global base ─────────────────────────────────────────────────────────── */
+@layer base {
+  body {
+    @apply bg-feex-neutral-light text-feex-text-dark font-sans antialiased overflow-x-hidden;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(248,209,167,0.35) 0%, transparent 60%);
+    min-height: 100vh;
+  }
+
+  h1, h2, h3 {
+    @apply font-display text-feex-text-dark;
+  }
+
+  *:focus-visible {
+    outline: 2px solid rgba(223,62,43,0.5);
+    outline-offset: 2px;
+  }
+}
+
+/* ─── Components ─────────────────────────────────────────────────────────── */
+@layer components {
+
+  /* Feex card — white surface with soft shadow */
+  .glass-card {
+    @apply rounded-feex border;
+    background: #ffffff;
+    border-color: #ece6e6;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  }
+  .glass-card:hover {
+    border-color: #f3ddc7;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+  }
+
+  /* Animated gradient logo text — Feex coral → peach */
+  .gradient-text {
+    background: linear-gradient(130deg, #df3e2b 0%, #e86657 40%, #e8b87a 75%, #df3e2b 100%);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 5s linear infinite;
+  }
+
+  /* Primary CTA — coral with subtle lift */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-feex-sm font-semibold text-white transition-all active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed select-none;
+    background: var(--btn-primary-bg, #df3e2b);
+    background: #df3e2b;
+    box-shadow: 0 4px 14px rgba(223,62,43,0.28);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #c23520;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(223,62,43,0.38);
+  }
+
+  /* Secondary — light neutral button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-feex-sm font-medium transition-all active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed select-none;
+    background: #ffffff;
+    border: 1px solid #ece6e6;
+    color: #5a4a48;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: #faf7f7;
+    border-color: #e0d6d6;
+    color: #df3e2b;
+  }
+
+  /* Status dots */
+  .status-dot {
+    @apply rounded-full flex-shrink-0;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+  }
+  /* Live green pulse for running state — attached via JS */
+  .status-dot.pulsing {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  /* Text inputs */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-feex-sm text-sm font-mono transition-all;
+    background: #ffffff;
+    border: 1px solid #ece6e6;
+    color: #5a4a48;
+    outline: none;
+  }
+  .input-field::placeholder {
+    color: #b3a9a7;
+  }
+  .input-field:focus {
+    border-color: rgba(223,62,43,0.55);
+    box-shadow: 0 0 0 3px rgba(223,62,43,0.14);
+    background: #fffdfc;
+  }
+  .input-field option {
+    background: #ffffff;
+    color: #5a4a48;
+  }
+
+  /* Copy button */
+  .copy-btn {
+    @apply btn-secondary;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+  }
+
+  /* Danger zone button */
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-feex-sm font-medium transition-all active:scale-[0.97] select-none;
+    background: #fdecea;
+    border: 1px solid #f5c6bf;
+    color: #c23520;
+  }
+  .btn-danger:hover {
+    background: #fbddd9;
+    border-color: #ef9c90;
+    color: #a82d1b;
+  }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar          { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb    { background: #ddd2d2; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #c9bcbc; }
+::-webkit-scrollbar-track    { background: transparent; }
+
+/* ─── Checkbox style ─────────────────────────────────────────────────────── */
+input[type="checkbox"] {
+  accent-color: #df3e2b;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}

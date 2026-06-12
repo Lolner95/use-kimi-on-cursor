@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schema.tauri.app/config/2/capability",
+  "identifier": "default",
+  "description": "Default capabilities for Kimi Cursor Gateway",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:event:default",
+    "core:tray:default",
+    "core:webview:default",
+    "core:window:default",
+    "shell:allow-open",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled",
+    "notification:default",
+    "kimi-commands"
+  ]
+}
