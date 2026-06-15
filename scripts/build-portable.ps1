@@ -8,8 +8,30 @@ $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 Set-Location $Root
 
 if (-not $SkipBuild) {
-    Write-Host "Building frontend + Tauri bundle (required for UI)..." -ForegroundColor Cyan
-    npm run tauri:build
+    Write-Host "Building release artifacts..." -ForegroundColor Cyan
+    $usedBuilder = $false
+
+    if (Test-Path (Join-Path $Root "package.json")) {
+        try {
+            npm run tauri:build
+            $usedBuilder = $true
+        } catch {
+            Write-Warning "npm tauri build failed, falling back to cargo."
+        }
+    }
+
+    if (-not $usedBuilder) {
+        try {
+            cargo tauri build
+            $usedBuilder = $true
+        } catch {
+            Write-Warning "cargo tauri build failed, falling back to cargo build --release."
+        }
+    }
+
+    if (-not $usedBuilder) {
+        cargo build --release --manifest-path (Join-Path $Root "src-tauri\Cargo.toml")
+    }
 }
 
 $DistIndex = Join-Path $Root "dist\index.html"
@@ -19,7 +41,7 @@ if (-not (Test-Path $DistIndex)) {
 
 $ExeSource = Join-Path $Root "src-tauri\target\release\kimi-cursor-gateway.exe"
 if (-not (Test-Path $ExeSource)) {
-    throw "Release exe not found at $ExeSource. Run npm run tauri:build first."
+    throw "Release exe not found at $ExeSource. Run this script without -SkipBuild first."
 }
 
 $OutDir = Join-Path $Root "release-portable\Kimi Cursor Gateway"
@@ -46,7 +68,7 @@ Kimi Cursor Gateway (Portable)
 Portable mode stores settings in:
   KimiCursorGatewayData\  (next to this folder)
 
-Autostart: enable "Start with Windows" in the wizard (recommended).
+Autostart: enable "Start with system login" in the wizard (recommended).
 
 Cursor settings:
   - OpenAI API Key: use the GATEWAY key from the app

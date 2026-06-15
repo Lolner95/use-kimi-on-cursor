@@ -42,7 +42,7 @@ async function init(): Promise<void> {
   await waitForTauri();
 
   await api.onTunnelUrlChanged(() => {
-    toast("Tunnel URL changed — Cursor settings auto-synced. Restart Cursor if it was open.", "info");
+    toast("Tunnel URL changed - Cursor settings auto-synced. Restart Cursor if it was open.", "info");
     void refresh();
   });
 
@@ -65,7 +65,7 @@ async function init(): Promise<void> {
           if (el) {
             el.scrollIntoView({ behavior: "smooth", block: "start" });
           } else {
-            // Dashboard not rendered yet — refresh first, then scroll.
+            // Dashboard not rendered yet - refresh first, then scroll.
             void refresh().then(() => {
               document.getElementById("advanced-settings")?.scrollIntoView({ behavior: "smooth", block: "start" });
             });

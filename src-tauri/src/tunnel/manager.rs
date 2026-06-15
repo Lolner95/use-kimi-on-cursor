@@ -1,4 +1,5 @@
 use regex::Regex;
+use std::env::consts::{ARCH, OS};
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
 use std::sync::Arc;
@@ -7,7 +8,7 @@ use tokio::process::{Child, Command};
 use tokio::sync::{mpsc, RwLock};
 use tracing::{info, warn};
 
-/// Kill orphaned `cloudflared.exe` processes from prior gateway runs (same binary or port).
+/// Kill orphaned cloudflared processes from prior gateway runs (same binary or port).
 pub fn kill_stale_cloudflared_processes(cloudflared_path: &Path, local_port: u16) -> u32 {
     #[cfg(windows)]
     {
@@ -15,8 +16,7 @@ pub fn kill_stale_cloudflared_processes(cloudflared_path: &Path, local_port: u16
     }
     #[cfg(not(windows))]
     {
-        let _ = (cloudflared_path, local_port);
-        0
+        kill_stale_cloudflared_unix(cloudflared_path, local_port)
     }
 }
 
@@ -66,6 +66,41 @@ fn kill_stale_cloudflared_windows(cloudflared_path: &Path, local_port: u16) -> u
     }
 }
 
+#[cfg(not(windows))]
+fn kill_stale_cloudflared_unix(cloudflared_path: &Path, local_port: u16) -> u32 {
+    let port_pattern = format!("127.0.0.1:{local_port}");
+    let binary_pattern = cloudflared_path
+        .file_name()
+        .and_then(|n| n.to_str())
+        .unwrap_or("cloudflared");
+    let output = std::process::Command::new("sh")
+        .arg("-c")
+        .arg(format!(
+            "ps -axo pid=,command= | awk 'index($0, \"{binary_pattern}\") && index($0, \"{port_pattern}\") {{print $1}}'"
+        ))
+        .output();
+
+    let Ok(out) = output else {
+        return 0;
+    };
+
+    let pids = String::from_utf8_lossy(&out.stdout);
+    let mut killed = 0u32;
+    for pid in pids.lines().map(str::trim).filter(|p| !p.is_empty()) {
+        if std::process::Command::new("kill")
+            .args(["-9", pid])
+            .status()
+            .is_ok_and(|s| s.success())
+        {
+            killed += 1;
+        }
+    }
+    if killed > 0 {
+        info!("Killed {killed} stale cloudflared process(es) for port {local_port}");
+    }
+    killed
+}
+
 #[derive(Debug, Clone)]
 pub enum TunnelEvent {
     UrlChanged(String),
@@ -102,7 +137,7 @@ impl TunnelManager {
     pub async fn start(&mut self, event_tx: mpsc::UnboundedSender<TunnelEvent>) -> Result<(), String> {
         if !self.cloudflared_path.exists() {
             return Err(
-                "cloudflared is not installed yet. Use the in-app downloader or place cloudflared.exe in app data."
+                "cloudflared is not installed yet. Use the in-app downloader or place the cloudflared binary in app data."
                     .to_string(),
             );
         }
@@ -194,7 +229,7 @@ async fn read_stream_for_url<R>(
 }
 
 pub async fn download_cloudflared(target: &Path) -> Result<(), String> {
-    let url = "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe";
+    let url = cloudflared_download_url()?;
     let response = reqwest::get(url)
         .await
         .map_err(|e| format!("Download failed: {e}"))?;
@@ -209,21 +244,122 @@ pub async fn download_cloudflared(target: &Path) -> Result<(), String> {
     if let Some(parent) = target.parent() {
         std::fs::create_dir_all(parent).map_err(|e| format!("Could not create directory: {e}"))?;
     }
-    std::fs::write(target, bytes).map_err(|e| format!("Could not save cloudflared: {e}"))?;
+
+    if target
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .is_some_and(|ext| ext.eq_ignore_ascii_case("exe"))
+        || !matches!(OS, "macos")
+    {
+        std::fs::write(target, bytes).map_err(|e| format!("Could not save cloudflared: {e}"))?;
+    } else {
+        // macOS release artifacts are tarballs. Extract the `cloudflared` binary.
+        let parent = target
+            .parent()
+            .ok_or_else(|| "Could not resolve cloudflared target directory.".to_string())?;
+        let tarball = parent.join("cloudflared-download.tgz");
+        std::fs::write(&tarball, bytes).map_err(|e| format!("Could not save cloudflared archive: {e}"))?;
+        let status = std::process::Command::new("tar")
+            .arg("-xzf")
+            .arg(&tarball)
+            .arg("-C")
+            .arg(parent)
+            .status()
+            .map_err(|e| format!("Could not extract cloudflared archive: {e}"))?;
+        let _ = std::fs::remove_file(&tarball);
+        if !status.success() {
+            return Err("Failed to extract cloudflared archive.".to_string());
+        }
+        let extracted = parent.join("cloudflared");
+        if !extracted.exists() {
+            return Err("cloudflared archive extracted but binary was not found.".to_string());
+        }
+        if extracted != target {
+            std::fs::rename(&extracted, target)
+                .map_err(|e| format!("Could not move cloudflared binary: {e}"))?;
+        }
+    }
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mut perms = std::fs::metadata(target)
+            .map_err(|e| format!("Could not read cloudflared permissions: {e}"))?
+            .permissions();
+        perms.set_mode(0o755);
+        std::fs::set_permissions(target, perms)
+            .map_err(|e| format!("Could not set cloudflared as executable: {e}"))?;
+    }
+
     info!("Downloaded cloudflared to {}", target.display());
     Ok(())
 }
 
 pub fn resolve_cloudflared_path(app_data_path: &Path, resource_dir: Option<PathBuf>) -> PathBuf {
     if let Some(res) = resource_dir {
-        let sidecar = res.join("cloudflared-x86_64-pc-windows-msvc.exe");
+        let sidecar = res.join(cloudflared_sidecar_filename());
         if sidecar.exists() {
             return sidecar;
         }
-        let sidecar2 = res.join("binaries").join("cloudflared-x86_64-pc-windows-msvc.exe");
+        let sidecar2 = res.join("binaries").join(cloudflared_sidecar_filename());
         if sidecar2.exists() {
             return sidecar2;
         }
     }
-    app_data_path.join("cloudflared.exe")
+    app_data_path.join(cloudflared_binary_name())
+}
+
+fn cloudflared_binary_name() -> &'static str {
+    if cfg!(windows) {
+        "cloudflared.exe"
+    } else {
+        "cloudflared"
+    }
+}
+
+fn cloudflared_sidecar_filename() -> String {
+    let target = if cfg!(windows) {
+        "x86_64-pc-windows-msvc".to_string()
+    } else if cfg!(target_os = "macos") {
+        let arch = if ARCH == "aarch64" {
+            "aarch64-apple-darwin"
+        } else {
+            "x86_64-apple-darwin"
+        };
+        arch.to_string()
+    } else if cfg!(target_os = "linux") {
+        let arch = if ARCH == "aarch64" {
+            "aarch64-unknown-linux-gnu"
+        } else {
+            "x86_64-unknown-linux-gnu"
+        };
+        arch.to_string()
+    } else {
+        format!("{ARCH}-{OS}")
+    };
+
+    if cfg!(windows) {
+        format!("cloudflared-{target}.exe")
+    } else {
+        format!("cloudflared-{target}")
+    }
+}
+
+fn cloudflared_download_url() -> Result<String, String> {
+    let artifact = match (OS, ARCH) {
+        ("windows", "x86_64") => "cloudflared-windows-amd64.exe",
+        ("windows", "aarch64") => "cloudflared-windows-arm64.exe",
+        ("linux", "x86_64") => "cloudflared-linux-amd64",
+        ("linux", "aarch64") => "cloudflared-linux-arm64",
+        ("macos", "x86_64") => "cloudflared-darwin-amd64.tgz",
+        ("macos", "aarch64") => "cloudflared-darwin-arm64.tgz",
+        _ => {
+            return Err(format!(
+                "Unsupported platform for automatic cloudflared download: os={OS}, arch={ARCH}"
+            ))
+        }
+    };
+    Ok(format!(
+        "https://github.com/cloudflare/cloudflared/releases/latest/download/{artifact}"
+    ))
 }

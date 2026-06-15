@@ -1,0 +1,118 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (example: v1.0.1)"
+        required: true
+        type: string
+      name:
+        description: "Release title"
+        required: true
+        type: string
+      prerelease:
+        description: "Mark as prerelease"
+        required: false
+        default: false
+        type: boolean
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            bundle_filter: "nsis,msi"
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            bundle_filter: "app,dmg"
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            bundle_filter: "deb,appimage"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libsqlite3-dev
+
+      - name: Install frontend deps
+        run: npm ci
+
+      - name: Build Tauri bundles
+        run: npx tauri build --target ${{ matrix.target }} --bundles ${{ matrix.bundle_filter }}
+
+      - name: Upload bundle artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-${{ matrix.os }}
+          path: src-tauri/target/${{ matrix.target }}/release/bundle/**
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+
+      - name: Prepare release metadata
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+            echo "name=${{ github.event.inputs.name }}" >> "$GITHUB_OUTPUT"
+            echo "prerelease=${{ github.event.inputs.prerelease }}" >> "$GITHUB_OUTPUT"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+            echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+            echo "name=Kimi Cursor Gateway $TAG" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create or update release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: ${{ steps.meta.outputs.name }}
+          prerelease: ${{ steps.meta.outputs.prerelease }}
+          generate_release_notes: true
+          files: |
+            release-artifacts/**/*

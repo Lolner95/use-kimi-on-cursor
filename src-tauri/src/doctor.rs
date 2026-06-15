@@ -326,7 +326,7 @@ fn check_autostart(settings: &AppSettings) -> DoctorCheck {
             DoctorStatus::Warn
         },
         detail: if settings.autostart_enabled {
-            "App will start with Windows.".into()
+            "App will start automatically after login.".into()
         } else {
             "Autostart is off. Enable it in Controls if desired.".into()
         },

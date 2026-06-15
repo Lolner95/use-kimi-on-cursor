@@ -237,7 +237,7 @@ function renderRequestLog(events: TokenUsageEvent[]): HTMLElement {
   if (events.length === 0) {
     const empty = el("div", "text-center py-8 text-sm");
     empty.style.color = "#8a8a8a";
-    empty.textContent = "No requests yet — start a conversation in Cursor.";
+    empty.textContent = "No requests yet - start a conversation in Cursor.";
     return wrap;
   }
 
@@ -281,7 +281,7 @@ function renderRequestLog(events: TokenUsageEvent[]): HTMLElement {
     const meta = el("div", "flex flex-col items-end shrink-0 gap-0.5");
     const latEl = el("div", "text-xs tabular-nums");
     latEl.style.color = "#8a8a8a";
-    latEl.textContent = ev.latencyMs > 0 ? `${(ev.latencyMs / 1000).toFixed(1)}s` : "—";
+    latEl.textContent = ev.latencyMs > 0 ? `${(ev.latencyMs / 1000).toFixed(1)}s` : "-";
     const totEl = el("div", "text-xs font-medium tabular-nums");
     totEl.style.color = "#5a4a48";
     totEl.textContent = fmt(ev.totalTokens);
@@ -309,7 +309,7 @@ export function renderAnalytics(
     title.style.color = "#5a4a48";
     const msg = el("div", "text-sm");
     msg.style.color = "#8a8a8a";
-    msg.textContent = "Start chatting in Cursor with the gateway model — your analytics will appear here.";
+    msg.textContent = "Start chatting in Cursor with the gateway model - your analytics will appear here.";
     empty.append(icon, title, msg);
     card.append(empty);
     return card;

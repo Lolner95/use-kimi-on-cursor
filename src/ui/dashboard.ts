@@ -132,7 +132,7 @@ export function renderDashboard(
   // ── Two-column grid: Status | Cursor Settings ────────────────────────────────
   const grid = el("div", "grid grid-cols-1 lg:grid-cols-2 gap-5");
 
-  // — Gateway status card —
+  // - Gateway status card -
   const statusCard = el("div", "glass-card p-5");
   statusCard.append(sectionTitle("Gateway Status"));
 
@@ -173,7 +173,7 @@ export function renderDashboard(
   statusCard.append(ctrlRow);
   grid.append(statusCard);
 
-  // — Cursor connection card —
+  // - Cursor connection card -
   const cursorCard = el("div", "glass-card p-5");
   cursorCard.append(sectionTitle("Connection Details"));
 
@@ -243,7 +243,7 @@ export function renderDashboard(
   if (state.logs.length === 0) {
     const empty = el("div", "flex items-center justify-center h-full text-center");
     empty.style.color = "#b3a9a7";
-    empty.textContent = "No activity yet — start the gateway to see logs.";
+    empty.textContent = "No activity yet - start the gateway to see logs.";
     logBox.append(empty);
   } else {
     state.logs.slice(-80).forEach(line => {
@@ -275,7 +275,7 @@ export function renderDashboard(
   const rotateKey = el("button", "btn-secondary text-sm", ["Rotate API Key"]);
   rotateKey.addEventListener("click", async () => {
     const key = await api.rotateGatewayKey();
-    toast("Key rotated — update Cursor", "info");
+    toast("Key rotated - update Cursor", "info");
     await onRefresh();
     await navigator.clipboard.writeText(key);
   });
@@ -307,7 +307,7 @@ export function renderDashboard(
   });
   const autostartText = el("span", "text-sm");
   autostartText.style.color = "#5a5a5a";
-  autostartText.textContent = "Start with Windows";
+  autostartText.textContent = "Start with system login";
   autostartLabel.append(autostartCheck, autostartText);
   controlsCard.append(autostartLabel);
   row3.append(controlsCard);
@@ -343,10 +343,11 @@ function renderAdvancedForm(settings: SettingsView, onRefresh: () => Promise<voi
 
   const aliasModel = el("select", "input-field") as HTMLSelectElement;
   [
-    ["gpt-5-high-max", "GPT-5 High Max — recommended (256K context)"],
+    ["gpt-5-high-max", "GPT-5 High Max - recommended (256K context)"],
     ["gpt-5.5-high",   "GPT-5.5 High"],
     ["gpt-4-turbo",    "GPT-4 Turbo (legacy)"],
     ["gpt-4o",         "GPT-4o"],
+    ["kimi-k2.7",      "kimi-k2.7 (direct, latest)"],
     ["kimi-k2.6",      "kimi-k2.6 (direct)"],
   ].forEach(([v, lbl]) => {
     const opt = el("option", "", [lbl]) as HTMLOptionElement;
@@ -396,7 +397,7 @@ function renderAdvancedForm(settings: SettingsView, onRefresh: () => Promise<voi
     await api.updateSettings({
       gatewayKey: settings.gatewayKey,
       localPort: Number(port.value) || 4001,
-      realModel: realModel.value || "kimi-k2.6",
+      realModel: realModel.value || "kimi-k2.7",
       aliasModel: aliasModel.value || "gpt-5-high-max",
       maxTokensDefault: Number(maxTokens.value) || 32768,
       forceNonStreaming: getToggle("forceNonStreaming"),

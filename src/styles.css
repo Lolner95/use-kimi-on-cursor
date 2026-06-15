@@ -24,7 +24,7 @@
 /* ─── Components ─────────────────────────────────────────────────────────── */
 @layer components {
 
-  /* Feex card — white surface with soft shadow */
+  /* Feex card - white surface with soft shadow */
   .glass-card {
     @apply rounded-feex border;
     background: #ffffff;
@@ -37,7 +37,7 @@
     box-shadow: 0 8px 30px rgba(0,0,0,0.10);
   }
 
-  /* Animated gradient logo text — Feex coral → peach */
+  /* Animated gradient logo text - Feex coral → peach */
   .gradient-text {
     background: linear-gradient(130deg, #df3e2b 0%, #e86657 40%, #e8b87a 75%, #df3e2b 100%);
     background-size: 300% auto;
@@ -47,7 +47,7 @@
     animation: shimmer 5s linear infinite;
   }
 
-  /* Primary CTA — coral with subtle lift */
+  /* Primary CTA - coral with subtle lift */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-feex-sm font-semibold text-white transition-all active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed select-none;
     background: var(--btn-primary-bg, #df3e2b);
@@ -60,7 +60,7 @@
     box-shadow: 0 6px 20px rgba(223,62,43,0.38);
   }
 
-  /* Secondary — light neutral button */
+  /* Secondary - light neutral button */
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-feex-sm font-medium transition-all active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed select-none;
     background: #ffffff;
@@ -80,7 +80,7 @@
     height: 10px;
     display: inline-block;
   }
-  /* Live green pulse for running state — attached via JS */
+  /* Live green pulse for running state - attached via JS */
   .status-dot.pulsing {
     animation: pulseGlow 2s ease-in-out infinite;
   }

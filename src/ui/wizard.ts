@@ -32,7 +32,7 @@ export function renderWizard(
   let moonshotKey = "";
   let status: GatewayStatus | null = gatewayStatus;
 
-  // ── Outer shell — full-screen warm light with ambient glow ────────────────
+  // ── Outer shell - full-screen warm light with ambient glow ────────────────
   const shell = el("div", "min-h-screen flex flex-col items-center justify-center px-4 py-12");
   shell.style.cssText = `
     background: radial-gradient(ellipse 90% 60% at 50% -5%, rgba(248,209,167,0.45) 0%, transparent 55%),
@@ -164,7 +164,7 @@ export function renderWizard(
 
     const hint = el("div", "text-xs mb-4 px-3 py-2 rounded-feex-sm");
     hint.style.cssText = "background:#fdf3e9;border:1px solid #f3ddc7;color:#8a7a5a";
-    hint.textContent = 'Your key starts with "sk-" — stored encrypted on this device only.';
+    hint.textContent = 'Your key starts with "sk-" - stored encrypted on this device only.';
     body.append(hint);
 
     const input = el("input", "input-field mb-3") as HTMLInputElement;
@@ -246,7 +246,7 @@ export function renderWizard(
 
     const warn = el("div", "text-xs px-3 py-2.5 rounded-feex-sm mb-4");
     warn.style.cssText = "background:#fdf3e9;border:1px solid #f3ddc7;color:#8a7a5a";
-    warn.textContent = "⚡ A public HTTPS tunnel is required because Cursor blocks localhost. The URL may change after restart — the app auto-syncs it.";
+    warn.textContent = "⚡ A public HTTPS tunnel is required because Cursor blocks localhost. The URL may change after restart - the app auto-syncs it.";
 
     const markStep = (idx: number, state: "active" | "done" | "error"): void => {
       const row = stepEls[idx];
@@ -375,10 +375,10 @@ export function renderWizard(
     const autostartText = el("div", "flex flex-col gap-0.5");
     const atLabel = el("div", "text-sm font-medium");
     atLabel.style.color = "#5a4a48";
-    atLabel.textContent = "Start with Windows";
+    atLabel.textContent = "Start with system login";
     const atSub = el("div", "text-xs");
     atSub.style.color = "#8a8a8a";
-    atSub.textContent = "Recommended — gateway starts automatically in the tray after login.";
+    atSub.textContent = "Recommended - gateway starts automatically in the tray after login.";
     autostartText.append(atLabel, atSub);
     autostartLabel.append(autostartCheck, autostartText);
     body.append(autostartLabel);
@@ -399,7 +399,7 @@ export function renderWizard(
         try { await api.applyCursorSettings(); } catch { /* ok */ }
         await api.completeWizard(autostartCheck.checked);
         clearStep();
-        toast("Setup complete — welcome to the dashboard!", "success");
+        toast("Setup complete - welcome to the dashboard!", "success");
         callbacks.onComplete();
       } catch (e) { toast(String(e), "error"); finish.removeAttribute("disabled"); }
     });

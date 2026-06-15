@@ -348,7 +348,7 @@ fn strip_unsupported_params(obj: &mut Map<String, Value>) {
     ] {
         obj.remove(key);
     }
-    // response_format is preserved — Moonshot supports JSON mode.
+    // response_format is preserved - Moonshot supports JSON mode.
     // Only strip if it's not a supported format (e.g. complex JSON schemas).
     if let Some(rf) = obj.get("response_format") {
         if let Some(typ) = rf.get("type").and_then(|t| t.as_str()) {
@@ -770,7 +770,7 @@ fn normalize_schema_node(value: &mut Value, depth: usize) {
             obj.insert("$ref".into(), Value::String(fixed));
         } else {
             // Any other $ref format (e.g. bare name, #/properties/X) is not
-            // supported by Moonshot — remove it and fall through to ensure_type.
+            // supported by Moonshot - remove it and fall through to ensure_type.
             obj.remove("$ref");
         }
     }
@@ -845,7 +845,7 @@ mod tests {
 
     fn default_config() -> SanitizerConfig {
         SanitizerConfig {
-            real_model: "kimi-k2.6".to_string(),
+            real_model: "kimi-k2.7".to_string(),
             force_non_streaming: true,
             thinking_disabled: true,
             sanitize_tools: true,
@@ -862,7 +862,7 @@ mod tests {
             "messages": [{ "role": "user", "content": "hi" }]
         });
         let result = sanitize_request(body, &default_config());
-        assert_eq!(result["model"], "kimi-k2.6");
+        assert_eq!(result["model"], "kimi-k2.7");
     }
 
     #[test]
@@ -872,7 +872,7 @@ mod tests {
             "messages": [{ "role": "user", "content": "hi" }]
         });
         let result = sanitize_request(body, &default_config());
-        assert_eq!(result["model"], "kimi-k2.6");
+        assert_eq!(result["model"], "kimi-k2.7");
     }
 
     #[test]

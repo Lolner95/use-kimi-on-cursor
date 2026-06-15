@@ -9,7 +9,7 @@ use crate::crypto::{
 
 pub const APP_NAME: &str = "KimiCursorGateway";
 pub const DEFAULT_PORT: u16 = 4001;
-pub const DEFAULT_REAL_MODEL: &str = "kimi-k2.6";
+pub const DEFAULT_REAL_MODEL: &str = "kimi-k2.7";
 pub const DEFAULT_ALIAS_MODEL: &str = "gpt-5-high-max";
 pub const DEFAULT_MAX_TOKENS: u32 = 32_768;
 pub const MAX_CONTEXT_TOKENS: u32 = 256 * 1024;
@@ -183,7 +183,14 @@ impl AppPaths {
     }
 
     pub fn cloudflared_path(&self) -> PathBuf {
-        self.data_dir.join("cloudflared.exe")
+        #[cfg(windows)]
+        {
+            self.data_dir.join("cloudflared.exe")
+        }
+        #[cfg(not(windows))]
+        {
+            self.data_dir.join("cloudflared")
+        }
     }
 
     pub fn portable_mode(&self) -> bool {

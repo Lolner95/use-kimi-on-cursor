@@ -155,6 +155,7 @@ async fn models_handler(
             { "id": "gpt-5.5-high", "object": "model", "owned_by": "openai", "context_length": 262144, "capabilities": { "vision": true, "function_calling": true, "json_mode": true } },
             { "id": "gpt-4-turbo", "object": "model", "owned_by": "openai", "context_length": 262144, "capabilities": { "vision": true, "function_calling": true, "json_mode": true } },
             { "id": "gpt-4o", "object": "model", "owned_by": "openai", "context_length": 262144, "capabilities": { "vision": true, "function_calling": true, "json_mode": true } },
+            { "id": "kimi-k2.7", "object": "model", "owned_by": "moonshot", "context_length": 262144, "capabilities": { "vision": true, "function_calling": true, "json_mode": true } },
             { "id": "kimi-k2.6", "object": "model", "owned_by": "moonshot", "context_length": 262144, "capabilities": { "vision": true, "function_calling": true, "json_mode": true } }
         ]
     }))
@@ -481,7 +482,7 @@ async fn chat_completions_handler(
                                     )
                                         .into_response();
                                 }
-                                // Retry also failed — fall through to normal error path with retry text
+                                // Retry also failed - fall through to normal error path with retry text
                                 let friendly = friendly_moonshot_error(retry_code, &retry_text);
                                 ctx.metrics.record_error(Some(retry_code), started.elapsed().as_millis() as u64, friendly.clone());
                                 let redacted = redact_secrets(&retry_text, &[&moonshot_key]);
@@ -544,7 +545,7 @@ pub fn completion_to_sse(completion: &Value) -> String {
     let model = completion
         .get("model")
         .and_then(|v| v.as_str())
-        .unwrap_or("kimi-k2.6")
+        .unwrap_or("kimi-k2.7")
         .to_string();
 
     let choice = completion
@@ -620,7 +621,7 @@ fn friendly_moonshot_error(status: u16, body: &str) -> String {
         }
         429 => "Moonshot rate limit reached. Wait a moment and try again.".to_string(),
         400 if body.contains("tool_call_id") || (body.contains("tool call") && body.contains("not found")) => {
-            "Kimi rejected a mismatched tool call in the conversation history. The gateway now repairs tool-call pairing automatically — retry the request. If this repeats, restart the gateway and export diagnostics.".to_string()
+            "Kimi rejected a mismatched tool call in the conversation history. The gateway now repairs tool-call pairing automatically - retry the request. If this repeats, restart the gateway and export diagnostics.".to_string()
         }
         400 if body.contains("image") || body.contains("vision") || body.contains("file") => {
             format!("Kimi rejected the image or file upload. Response: {}", body)
@@ -635,10 +636,10 @@ fn friendly_moonshot_error(status: u16, body: &str) -> String {
             "Cursor sent OpenAI sampling parameters Kimi rejects. Restart the gateway to pick up the latest sanitizer.".to_string()
         }
         400 if body.contains("developer") || body.contains("tokenization failed") => {
-            "Cursor sent an unsupported message format. Restart the gateway — developer roles are auto-converted.".to_string()
+            "Cursor sent an unsupported message format. Restart the gateway - developer roles are auto-converted.".to_string()
         }
         400 if body.contains("function name is invalid") => {
-            "Cursor sent tool names Kimi rejects (dots/slashes in MCP tool names). The gateway now sanitizes these — restart the gateway to apply.".to_string()
+            "Cursor sent tool names Kimi rejects (dots/slashes in MCP tool names). The gateway now sanitizes these - restart the gateway to apply.".to_string()
         }
         _ => format!("Moonshot returned an error (HTTP {status}). Try again or export diagnostics."),
     }

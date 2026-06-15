@@ -19,7 +19,7 @@ def main() -> int:
     health = json.loads(urllib.request.urlopen("http://127.0.0.1:4001/health", timeout=10).read())
     base_url = health["publicBaseUrl"]
     if not base_url:
-        print("ERROR: gateway has no publicBaseUrl — start the gateway first")
+        print("ERROR: gateway has no publicBaseUrl - start the gateway first")
         return 1
 
     db = os.path.join(os.environ["APPDATA"], "Cursor", "User", "globalStorage", "state.vscdb")

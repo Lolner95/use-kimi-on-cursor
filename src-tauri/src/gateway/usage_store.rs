@@ -411,7 +411,7 @@ mod tests {
     fn extracts_usage_from_sse_chunk() {
         let store = temp_store();
         let chunk = b"data: {\"usage\":{\"prompt_tokens\":10,\"completion_tokens\":5,\"total_tokens\":15}}\n\n";
-        store.try_record_from_sse(chunk, "req-2", "kimi-k2.6");
+        store.try_record_from_sse(chunk, "req-2", "kimi-k2.7");
         let snap = store.snapshot();
         assert_eq!(snap.today.total_tokens, 15);
     }
@@ -422,7 +422,7 @@ mod tests {
         let mut scanner = SseUsageScanner::new(
             store.clone(),
             "req-3".into(),
-            "kimi-k2.6".into(),
+            "kimi-k2.7".into(),
             std::time::Instant::now(),
         );
         // The usage event is split mid-JSON across two network chunks.
@@ -439,7 +439,7 @@ mod tests {
         let mut scanner = SseUsageScanner::new(
             store.clone(),
             "req-4".into(),
-            "kimi-k2.6".into(),
+            "kimi-k2.7".into(),
             std::time::Instant::now(),
         );
         scanner.feed(b"data: {\"usage\":null}\n\n");

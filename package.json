@@ -1,17 +1,7 @@
 {
-  "name": "use-kimi-on-cursor",
-  "description": "Open-source bridge to use Moonshot Kimi K2.6 inside Cursor IDE on Windows",
-  "version": "1.1.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Lolner95/use-kimi-on-cursor.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Lolner95/use-kimi-on-cursor/issues"
-  },
-  "homepage": "https://github.com/Lolner95/use-kimi-on-cursor#readme",
-  "license": "MIT",
-  "author": "Lolner95",
+  "name": "kimi-cursor-gateway",
+  "private": true,
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -22,6 +12,8 @@
     "tauri:build": "tauri build",
     "start": "npm run tauri:build && powershell -Command \"Start-Process 'src-tauri/target/release/kimi-cursor-gateway.exe'\"",
     "build:portable": "powershell -ExecutionPolicy Bypass -File scripts/build-portable.ps1",
+    "build:portable:unix": "python3 scripts/build-portable.py",
+    "test:cursor-agent:unix": "python3 scripts/test-cursor-agent.py",
     "test:live": "cargo test --test live_e2e --test live_tunnel -- --ignored --nocapture --test-threads=1"
   },
   "dependencies": {

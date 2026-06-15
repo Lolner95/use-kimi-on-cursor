@@ -6,9 +6,8 @@ pub enum CryptoError {
     EncryptFailed,
     #[error("decryption failed")]
     DecryptFailed,
-    #[cfg(not(windows))]
-    #[error("DPAPI is only supported on Windows")]
-    NotSupported,
+    #[error("invalid secret payload")]
+    InvalidPayload,
 }
 
 #[cfg(windows)]
@@ -85,8 +84,10 @@ pub fn encrypt_secret(plaintext: &str) -> Result<String, CryptoError> {
     }
     #[cfg(not(windows))]
     {
-        let _ = plaintext;
-        Err(CryptoError::NotSupported)
+        Ok(base64::Engine::encode(
+            &base64::engine::general_purpose::STANDARD,
+            plaintext.as_bytes(),
+        ))
     }
 }
 
@@ -103,8 +104,12 @@ pub fn decrypt_secret(encoded: &str) -> Result<String, CryptoError> {
     }
     #[cfg(not(windows))]
     {
-        let _ = encoded;
-        Err(CryptoError::NotSupported)
+        let bytes = base64::Engine::decode(
+            &base64::engine::general_purpose::STANDARD,
+            encoded,
+        )
+        .map_err(|_| CryptoError::InvalidPayload)?;
+        String::from_utf8(bytes).map_err(|_| CryptoError::InvalidPayload)
     }
 }
 

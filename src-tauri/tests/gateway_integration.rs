@@ -54,7 +54,7 @@ async fn health_endpoint_returns_expected_shape() {
     assert_eq!(body["ok"], true);
     assert_eq!(body["app"], "Kimi Cursor Gateway");
     assert_eq!(body["model"], "gpt-5-high-max");
-    assert_eq!(body["realModel"], "kimi-k2.6");
+    assert_eq!(body["realModel"], "kimi-k2.7");
     assert!(body["publicBaseUrl"]
         .as_str()
         .unwrap()
@@ -90,6 +90,7 @@ async fn models_endpoint_lists_openai_compatible_models() {
     assert!(ids.contains(&"gpt-5-high-max".to_string()));
     assert!(ids.contains(&"gpt-4-turbo".to_string()));
     assert!(ids.contains(&"gpt-4o".to_string()));
+    assert!(ids.contains(&"kimi-k2.7".to_string()));
     assert!(ids.contains(&"kimi-k2.6".to_string()));
 }
 

@@ -263,19 +263,19 @@ pub async fn complete_wizard(
         config.save().map_err(|e| e.to_string())?;
     }
 
-    // Always register/unregister with Windows startup based on the user's choice.
+    // Always register/unregister startup based on the user's choice.
     // The wizard checkbox defaults to checked, so autostart is on unless explicitly
     // unchecked. We always call the API (not just on enable) so the registry stays
     // in sync with the saved setting.
     if enable_autostart {
         app.autolaunch()
             .enable()
-            .map_err(|e| format!("Could not register Windows startup entry: {e}"))?;
-        state.push_log("Windows autostart enabled — gateway will start automatically on boot.".to_string());
+            .map_err(|e| format!("Could not register startup entry: {e}"))?;
+        state.push_log("Autostart enabled - gateway will start automatically after login.".to_string());
     } else {
         // Best-effort removal; ignore if it was never registered.
         let _ = app.autolaunch().disable();
-        state.push_log("Windows autostart disabled.".to_string());
+        state.push_log("Autostart disabled.".to_string());
     }
 
     state.push_log("Setup wizard completed.".to_string());

@@ -427,7 +427,7 @@ async fn supervise_tunnel(
             url = url_rx.recv() => url,
             _ = tokio::time::sleep(std::time::Duration::from_secs(URL_TIMEOUT_SECS)) => {
                 append_log(&logs_dir, "tunnel.log",
-                    &format!("No URL after {URL_TIMEOUT_SECS}s — killing hung cloudflared and restarting"));
+                    &format!("No URL after {URL_TIMEOUT_SECS}s - killing hung cloudflared and restarting"));
                 let _ = child.kill().await;
                 None
             }
@@ -445,7 +445,7 @@ async fn supervise_tunnel(
 
             emit_url_and_sync(&app, &url, previous.as_deref()).await;
 
-            // Background health prober — periodically checks the tunnel is alive.
+            // Background health prober - periodically checks the tunnel is alive.
             let health_url = url.clone();
             let health_pub = public_url.clone();
             let health_logs = logs_dir.clone();
@@ -498,7 +498,7 @@ async fn supervise_tunnel(
                         append_log(
                             &health_logs,
                             "tunnel.log",
-                            "health probe failed — marking tunnel as dead",
+                            "health probe failed - marking tunnel as dead",
                         );
                         *health_pub.write().await = None;
                         // Kill cloudflared by pid so the supervise loop's wait() unblocks.
@@ -593,7 +593,7 @@ async fn emit_url_and_sync(app: &AppHandle, url: &str, previous: Option<&str>) {
                         notify(
                             &app_for_sync,
                             "Cursor settings synced",
-                            &format!("Tunnel ready: {url_owned}/v1 — restart Cursor if it was already open."),
+                            &format!("Tunnel ready: {url_owned}/v1 - restart Cursor if it was already open."),
                         );
                     }
                     Ok(alignment) => {

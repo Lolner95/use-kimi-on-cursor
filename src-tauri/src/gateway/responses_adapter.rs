@@ -16,7 +16,7 @@ pub struct AdaptStats {
 }
 
 /// Convert Cursor's Responses-shaped body into Chat Completions `messages`.
-/// Safe to call when the body already uses `messages` — it becomes a no-op.
+/// Safe to call when the body already uses `messages` - it becomes a no-op.
 pub fn adapt_cursor_responses_request(obj: &mut Map<String, Value>) -> AdaptStats {
     let mut stats = AdaptStats {
         messages_before: message_count(obj),
@@ -273,7 +273,7 @@ fn input_item_to_message(item: &Value) -> Option<Value> {
 /// `image_file`) into standard OpenAI Chat content parts (`text`, `image_url`).
 fn normalize_content_parts(content: &Value) -> Value {
     let Some(parts) = content.as_array() else {
-        // Not an array — leave strings and nulls as-is.
+        // Not an array - leave strings and nulls as-is.
         return content.clone();
     };
 
@@ -314,7 +314,7 @@ fn normalize_content_parts(content: &Value) -> Value {
                 }
             }
             "image_url" => {
-                // Already in OpenAI format — pass through but normalize the inner structure
+                // Already in OpenAI format - pass through but normalize the inner structure
                 // and strip the unsupported `detail` field (Moonshot rejects it).
                 let mut cloned = obj.clone();
                 if let Some(url_val) = cloned.get("image_url").cloned() {
@@ -332,7 +332,7 @@ fn normalize_content_parts(content: &Value) -> Value {
                 normalized.push(Value::Object(cloned));
             }
             _ => {
-                // Unknown part type — keep as-is; sanitizer will handle it.
+                // Unknown part type - keep as-is; sanitizer will handle it.
                 normalized.push(part.clone());
             }
         }
@@ -352,7 +352,7 @@ fn normalize_content_parts(content: &Value) -> Value {
 }
 
 /// Extract a non-empty call ID, trying `call_id` first then `id`.
-/// Returns `None` if both are absent or empty — callers must handle this.
+/// Returns `None` if both are absent or empty - callers must handle this.
 fn extract_call_id<'a>(item: &'a Value) -> Option<&'a str> {
     item.get("call_id")
         .and_then(|v| v.as_str())
@@ -395,7 +395,7 @@ fn function_call_to_tool_call(item: &Value, synth_id_counter: &mut usize) -> Val
 
 fn function_call_output_to_message(item: &Value, fallback_id: Option<&str>) -> Option<Value> {
     // Prefer call_id > id, then the caller-provided fallback (oldest unanswered
-    // call). Skip entirely if we cannot produce a non-empty id — an empty
+    // call). Skip entirely if we cannot produce a non-empty id - an empty
     // tool_call_id always causes Moonshot HTTP 400.
     let call_id = extract_call_id(item)
         .or(fallback_id)

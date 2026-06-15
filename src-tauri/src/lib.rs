@@ -213,7 +213,7 @@ pub fn run() {
                 }
 
                 // Start as soon as a key exists, even if the wizard was never formally
-                // finished — avoids a stale "incomplete wizard" state leaving Cursor with
+                // finished - avoids a stale "incomplete wizard" state leaving Cursor with
                 // no gateway/tunnel to talk to.
                 if auto_start && has_key {
                     match state.start_gateway(&handle).await {
@@ -222,7 +222,7 @@ pub fn run() {
                                 &handle,
                                 "Kimi Cursor Gateway",
                                 if status.cursor_ready {
-                                    "Gateway running — Cursor is configured and ready."
+                                    "Gateway running - Cursor is configured and ready."
                                 } else {
                                     "Gateway started. Establishing secure tunnel…"
                                 },

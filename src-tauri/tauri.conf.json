@@ -32,7 +32,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
+    "targets": "all",
     "windows": {
       "nsis": {
         "installMode": "both",
