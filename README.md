@@ -1,15 +1,15 @@
-<!-- SEO:Kimi Cursor, Cursor Kimi, Kimi 2.5, jailbreak Kimi Cursor, use Kimi in Cursor, Moonshot Kimi K2.6, Cursor IDE custom model, OpenAI base URL override, Kimi coding assistant, Cursor Agent with Kimi -->
+<!-- SEO:Kimi Cursor, Cursor Kimi, Kimi 2.7, jailbreak Kimi Cursor, use Kimi in Cursor, Moonshot Kimi K2.7, Cursor IDE custom model, OpenAI base URL override, Kimi coding assistant, Cursor Agent with Kimi -->
 
 <div align="center">
 
 # use-kimi-on-cursor
 
-**Use [Moonshot Kimi](https://platform.moonshot.ai) (K2.6) inside [Cursor](https://cursor.com), without fighting proxies, tunnels, or broken tool calls.**
+**Use [Moonshot Kimi](https://platform.moonshot.ai) (K2.7 / K2.6) inside [Cursor](https://cursor.com), without fighting proxies, tunnels, or broken tool calls.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)](https://github.com/Lolner95/use-kimi-on-cursor)
 [![Stack](https://img.shields.io/badge/Built%20with-Tauri%20%2B%20Rust-orange)](ARCHITECTURE.md)
-[![Moonshot](https://img.shields.io/badge/Model-Kimi%20K2.6-6366f1)](https://platform.moonshot.ai)
+[![Moonshot](https://img.shields.io/badge/Model-Kimi%20K2.7%20%2F%20K2.6-6366f1)](https://platform.moonshot.ai)
 
 [Quick start](#quick-start-5-minutes) · [How it works](#how-it-works) · [Cursor setup](#cursor-setup-copy-paste) · [FAQ](#faq) · [Build from source](#build-from-source)
 
@@ -38,7 +38,7 @@ You didn't sign up to become a protocol plumber. You wanted to write code.
 
 1. Runs a **local OpenAI-compatible gateway** tuned for what Cursor actually sends
 2. Opens a **public HTTPS tunnel** (Cloudflare Quick Tunnel) so Cursor is allowed to connect
-3. Forwards clean requests to **Moonshot Kimi K2.6**
+3. Forwards clean requests to **Moonshot Kimi K2.7** (with K2.6 supported)
 4. Shows you the exact **Base URL + API key** to paste into Cursor
 
 No Python scripts. No manual `cloudflared` terminal sessions. No LiteLLM config archaeology.
@@ -48,7 +48,7 @@ You  →  Cursor IDE  →  https://….trycloudflare.com/v1
                               ↓
                     Kimi Cursor Gateway (your PC)
                               ↓
-                    api.moonshot.ai (Kimi K2.6)
+                    api.moonshot.ai (Kimi K2.7 / K2.6)
 ```
 
 ---
@@ -113,7 +113,7 @@ Custom model name:       gpt-5-high-max
 ```
 
 **Why `gpt-5-high-max`?**  
-Cursor only lets you add certain model names. The gateway maps that alias (and others like `gpt-4-turbo`) to **`kimi-k2.6`** with a 256K context window. You type a Cursor-friendly name; Kimi does the work.
+Cursor only lets you add certain model names. The gateway maps that alias (and others like `gpt-4-turbo`) to a configured Kimi real model (`kimi-k2.7` by default, `kimi-k2.6` supported) with a 256K context window. You type a Cursor-friendly name; Kimi does the work.
 
 **Important:** Use the **gateway key** in Cursor, never your Moonshot key. Your Moonshot key never leaves the app.
 
@@ -143,14 +143,14 @@ Cursor's Agent mode sends messy, OpenAI-flavored payloads. Kimi is strict. The g
 
 | Cursor sends | Gateway does |
 |---|---|
-| Model aliases (`gpt-4-turbo`, `gpt-5-high-max`, …) | Maps to `kimi-k2.6` |
+| Model aliases (`gpt-4-turbo`, `gpt-5-high-max`, …) | Maps to configured Kimi model (`kimi-k2.7` default) |
 | `developer` role messages | Converts to `system` |
 | MCP tool names like `mcp.fs.read_file` | Sanitizes to valid Kimi identifiers |
 | `type: "custom"` tools, flat tool shapes | Normalizes to standard function tools |
 | Empty `messages` during model validation | Injects a seed user message |
 | `stream: true` + SSE expectations | Returns proper `text/event-stream` to Cursor |
 | Thinking / reasoning fields Kimi rejects | Strips or disables them |
-| Unsupported sampling params (`temperature`, `top_p`, …) | Removes them (K2.6 uses fixed sampling) |
+| Unsupported sampling params (`temperature`, `top_p`, …) | Removes them (K2.x uses fixed sampling) |
 
 This is the stuff that took hours to debug manually. The app just handles it.
 
@@ -172,7 +172,7 @@ Cursor refuses to call `http://127.0.0.1:…` for security reasons. Cloudflare Q
 | **Live logs + ZIP export** | Debug without guessing |
 | **Gateway key rotation** | Lock down the tunnel if the URL leaks |
 | **DPAPI-encrypted Moonshot key** | Your real key never hits logs or Cursor |
-| **Agent + MCP compatible** | Tool calls sanitized for Kimi K2.6 |
+| **Agent + MCP compatible** | Tool calls sanitized for Kimi K2.7/K2.6 |
 | **Portable mode** | Settings live next to the `.exe`, good for USB |
 
 ---
@@ -222,7 +222,7 @@ Details: [SECURITY.md](SECURITY.md)
 <details>
 <summary><strong>What models are supported?</strong></summary>
 
-The gateway targets **Kimi K2.6** (`kimi-k2.6`). In Cursor, add a custom model alias — default is `gpt-5-high-max`. Other aliases (`gpt-4-turbo`, `gpt-4o`, …) also map through.
+The gateway supports **Kimi K2.7** (`kimi-k2.7`) and **Kimi K2.6** (`kimi-k2.6`). In Cursor, add a custom model alias - default is `gpt-5-high-max`. Other aliases (`gpt-4-turbo`, `gpt-4o`, ...) also map through.
 
 </details>
 
