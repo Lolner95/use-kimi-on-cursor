@@ -107,6 +107,35 @@ jobs:
             echo "prerelease=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Build platform zip assets
+        run: |
+          set -euo pipefail
+          mkdir -p packaged/windows packaged/macos packaged/linux
+          cp -R release-artifacts/bundle-windows-latest/. packaged/windows/
+          cp -R release-artifacts/bundle-macos-latest/. packaged/macos/
+          cp -R release-artifacts/bundle-ubuntu-22.04/. packaged/linux/
+          cat > packaged/windows/APP_DESCRIPTION.txt <<'EOF'
+          Kimi Cursor Gateway
+          Open-source bridge to use Moonshot Kimi inside Cursor.
+          
+          This package contains the Windows release artifacts.
+          EOF
+          cat > packaged/macos/APP_DESCRIPTION.txt <<'EOF'
+          Kimi Cursor Gateway
+          Open-source bridge to use Moonshot Kimi inside Cursor.
+          
+          This package contains the macOS release artifacts.
+          EOF
+          cat > packaged/linux/APP_DESCRIPTION.txt <<'EOF'
+          Kimi Cursor Gateway
+          Open-source bridge to use Moonshot Kimi inside Cursor.
+          
+          This package contains the Linux release artifacts.
+          EOF
+          (cd packaged/windows && zip -r "../../Windows Version.zip" .)
+          (cd packaged/macos && zip -r "../../Mac Version.zip" .)
+          (cd packaged/linux && zip -r "../../Linux Version.zip" .)
+
       - name: Create or update release
         uses: softprops/action-gh-release@v2
         with:
@@ -114,5 +143,15 @@ jobs:
           name: ${{ steps.meta.outputs.name }}
           prerelease: ${{ steps.meta.outputs.prerelease }}
           generate_release_notes: true
+          overwrite_files: true
+          body: |
+            Kimi Cursor Gateway release assets by platform:
+            - Windows Version.zip
+            - Mac Version.zip
+            - Linux Version.zip
+            
+            Each zip includes APP_DESCRIPTION.txt with a short app description.
           files: |
-            release-artifacts/**/*
+            Windows Version.zip
+            Mac Version.zip
+            Linux Version.zip
